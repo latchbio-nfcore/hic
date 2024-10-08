@@ -54,7 +54,7 @@ if (params.res_tads && !params.skip_tads){
 }else{
   ch_tads_res=Channel.empty()
   if (!params.skip_tads){
-    log.warn "[nf-core/hic] Hi-C resolution for TADs calling not specified. See --res_tads" 
+    log.warn "[nf-core/hic] Hi-C resolution for TADs calling not specified. See --res_tads"
   }
 }
 
@@ -64,7 +64,7 @@ if (params.res_dist_decay && !params.skip_dist_decay){
 }else{
   ch_ddecay_res = Channel.empty()
   if (!params.skip_dist_decay){
-    log.warn "[nf-core/hic] Hi-C resolution for distance decay not specified. See --res_dist_decay" 
+    log.warn "[nf-core/hic] Hi-C resolution for distance decay not specified. See --res_dist_decay"
   }
 }
 
@@ -74,7 +74,7 @@ if (params.res_compartments && !params.skip_compartments){
 }else{
   ch_comp_res = Channel.empty()
   if (!params.skip_compartments){
-    log.warn "[nf-core/hic] Hi-C resolution for compartment calling not specified. See --res_compartments" 
+    log.warn "[nf-core/hic] Hi-C resolution for compartment calling not specified. See --res_compartments"
   }
 }
 
@@ -99,7 +99,7 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 // MODULE: Local to the pipeline
 //
-include { HIC_PLOT_DIST_VS_COUNTS } from '../modules/local/hicexplorer/hicPlotDistVsCounts' 
+include { HIC_PLOT_DIST_VS_COUNTS } from '../modules/local/hicexplorer/hicPlotDistVsCounts'
 include { MULTIQC } from '../modules/local/multiqc'
 
 //
@@ -239,7 +239,7 @@ workflow HIC {
       .filter{ it[0].resolution == it[2] }
       .map { it -> [it[0], it[1]]}
       .set{ ch_cool_tads }
-                                                                                                                                                                                                            
+
     TADS(
       ch_cool_tads
     )
