@@ -251,7 +251,6 @@ def nf_nf_core_hic(input: typing.List[Sample], outdir: typing_extensions.Annotat
     Latch Verified
     </strong>
     </p>
-    [![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.3476425-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.3476425)
 
     # nf-core/hic
 
