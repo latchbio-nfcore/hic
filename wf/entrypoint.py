@@ -37,7 +37,7 @@ def initialize() -> str:
 
     print("Provisioning shared storage volume... ", end="")
     resp = requests.post(
-        "http://nf-dispatcher-service.flyte.svc.cluster.local/provision-storage",
+        "http://nf-dispatcher-service.flyte.svc.cluster.local/provision-storage-ofs",
         headers=headers,
         json={
             "storage_expiration_hours": 0,
@@ -57,22 +57,22 @@ class Digestion(Enum):
     arima = 'arima'
 
 
-
-
 @dataclass
 class Sample:
     sample: str
     fastq_1: LatchFile
     fastq_2: LatchFile
 
-
+class Genome(Enum):
+    mm10 = "mm10"
+    GRCh37 = "GRCh37"
 
 
 input_construct_samplesheet = metadata._nextflow_metadata.parameters['input'].samplesheet_constructor
 
 
 @nextflow_runtime_task(cpu=4, memory=8, storage_gib=100)
-def nextflow_runtime(pvc_name: str, input: typing.List[Sample], outdir: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})], email: typing.Optional[str], multiqc_title: typing.Optional[str], genome: typing.Optional[str], fasta: typing.Optional[LatchFile], bwt2_index: typing.Optional[str], digestion: typing.Optional[Digestion], restriction_site: typing.Optional[str], ligation_site: typing.Optional[str], chromosome_size: typing.Optional[LatchFile], restriction_fragments: typing.Optional[LatchFile], min_cis_dist: typing.Optional[int], max_insert_size: typing.Optional[int], min_insert_size: typing.Optional[int], max_restriction_fragment_size: typing.Optional[int], min_restriction_fragment_size: typing.Optional[int], ice_filter_high_count_perc: typing.Optional[int], multiqc_methods_description: typing.Optional[str], save_reference: bool, dnase: bool, split_fastq: bool, fastq_chunks_size: typing.Optional[int], min_mapq: typing.Optional[int], bwt2_opts_end2end: typing.Optional[str], bwt2_opts_trimmed: typing.Optional[str], save_aligned_intermediates: bool, keep_dups: bool, keep_multi: bool, save_interaction_bam: bool, save_pairs_intermediates: bool, bin_size: typing.Optional[str], hicpro_maps: bool, ice_filter_low_count_perc: typing.Optional[float], ice_eps: typing.Optional[float], ice_max_iter: typing.Optional[int], save_raw_maps: bool, tads_caller: typing.Optional[str], res_tads: typing.Optional[str], skip_maps: bool, skip_dist_decay: bool, skip_tads: bool, skip_compartments: bool, skip_balancing: bool, skip_mcool: bool, skip_multiqc: bool) -> None:
+def nextflow_runtime(pvc_name: str, input: typing.List[Sample], outdir: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})], email: typing.Optional[str], multiqc_title: typing.Optional[str], genome: typing.Optional[Genome], fasta: typing.Optional[LatchFile], bwt2_index: typing.Optional[str], digestion: typing.Optional[Digestion], restriction_site: typing.Optional[str], ligation_site: typing.Optional[str], chromosome_size: typing.Optional[LatchFile], restriction_fragments: typing.Optional[LatchFile], min_cis_dist: typing.Optional[int], max_insert_size: typing.Optional[int], min_insert_size: typing.Optional[int], max_restriction_fragment_size: typing.Optional[int], min_restriction_fragment_size: typing.Optional[int], ice_filter_high_count_perc: typing.Optional[int], multiqc_methods_description: typing.Optional[str], save_reference: bool, dnase: bool, split_fastq: bool, fastq_chunks_size: typing.Optional[int], min_mapq: typing.Optional[int], bwt2_opts_end2end: typing.Optional[str], bwt2_opts_trimmed: typing.Optional[str], save_aligned_intermediates: bool, keep_dups: bool, keep_multi: bool, save_interaction_bam: bool, save_pairs_intermediates: bool, bin_size: typing.Optional[str], hicpro_maps: bool, ice_filter_low_count_perc: typing.Optional[float], ice_eps: typing.Optional[float], ice_max_iter: typing.Optional[int], save_raw_maps: bool, tads_caller: typing.Optional[str], res_tads: typing.Optional[str], skip_maps: bool, skip_dist_decay: bool, skip_tads: bool, skip_compartments: bool, skip_balancing: bool, skip_mcool: bool, skip_multiqc: bool) -> None:
     shared_dir = Path("/nf-workdir")
 
     exec_name = _get_execution_name()
@@ -236,7 +236,7 @@ def nextflow_runtime(pvc_name: str, input: typing.List[Sample], outdir: typing_e
 
 
 @workflow(metadata._nextflow_metadata)
-def nf_nf_core_hic(input: typing.List[Sample], outdir: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})], email: typing.Optional[str], multiqc_title: typing.Optional[str], genome: typing.Optional[str], fasta: typing.Optional[LatchFile], bwt2_index: typing.Optional[str], digestion: typing.Optional[Digestion], restriction_site: typing.Optional[str], ligation_site: typing.Optional[str], chromosome_size: typing.Optional[LatchFile], restriction_fragments: typing.Optional[LatchFile], min_cis_dist: typing.Optional[int], max_insert_size: typing.Optional[int], min_insert_size: typing.Optional[int], max_restriction_fragment_size: typing.Optional[int], min_restriction_fragment_size: typing.Optional[int], ice_filter_high_count_perc: typing.Optional[int], multiqc_methods_description: typing.Optional[str], save_reference: bool = False, dnase: bool = False, split_fastq: bool = False, fastq_chunks_size: typing.Optional[int] = 20000000, min_mapq: typing.Optional[int] = 10, bwt2_opts_end2end: typing.Optional[str] = "'--very-sensitive -L 30 --score-min L,-0.6,-0.2 --end-to-end --reorder'", bwt2_opts_trimmed: typing.Optional[str] = "'--very-sensitive -L 20 --score-min L,-0.6,-0.2 --end-to-end --reorder'", save_aligned_intermediates: bool = False, keep_dups: bool = False, keep_multi: bool = False, save_interaction_bam: bool = False, save_pairs_intermediates: bool = False, bin_size: typing.Optional[str] = '1000000,500000', hicpro_maps: bool = False, ice_filter_low_count_perc: typing.Optional[float] = 0.02, ice_eps: typing.Optional[float] = 0.1, ice_max_iter: typing.Optional[int] = 100, save_raw_maps: bool = False, tads_caller: typing.Optional[str] = 'hicexplorer,insulation', res_tads: typing.Optional[str] = '40000,20000', skip_maps: bool = False, skip_dist_decay: bool = False, skip_tads: bool = False, skip_compartments: bool = False, skip_balancing: bool = False, skip_mcool: bool = False, skip_multiqc: bool = False) -> None:
+def nf_nf_core_hic(input: typing.List[Sample], outdir: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})], email: typing.Optional[str], multiqc_title: typing.Optional[str], genome: typing.Optional[Genome], fasta: typing.Optional[LatchFile], bwt2_index: typing.Optional[str], digestion: typing.Optional[Digestion], restriction_site: typing.Optional[str], ligation_site: typing.Optional[str], chromosome_size: typing.Optional[LatchFile], restriction_fragments: typing.Optional[LatchFile], min_cis_dist: typing.Optional[int], max_insert_size: typing.Optional[int], min_insert_size: typing.Optional[int], max_restriction_fragment_size: typing.Optional[int], min_restriction_fragment_size: typing.Optional[int], ice_filter_high_count_perc: typing.Optional[int], multiqc_methods_description: typing.Optional[str], save_reference: bool = False, dnase: bool = False, split_fastq: bool = False, fastq_chunks_size: typing.Optional[int] = 20000000, min_mapq: typing.Optional[int] = 10, bwt2_opts_end2end: typing.Optional[str] = "'--very-sensitive -L 30 --score-min L,-0.6,-0.2 --end-to-end --reorder'", bwt2_opts_trimmed: typing.Optional[str] = "'--very-sensitive -L 20 --score-min L,-0.6,-0.2 --end-to-end --reorder'", save_aligned_intermediates: bool = False, keep_dups: bool = False, keep_multi: bool = False, save_interaction_bam: bool = False, save_pairs_intermediates: bool = False, bin_size: typing.Optional[str] = '1000000,500000', hicpro_maps: bool = False, ice_filter_low_count_perc: typing.Optional[float] = 0.02, ice_eps: typing.Optional[float] = 0.1, ice_max_iter: typing.Optional[int] = 100, save_raw_maps: bool = False, tads_caller: typing.Optional[str] = 'hicexplorer,insulation', res_tads: typing.Optional[str] = '40000,20000', skip_maps: bool = False, skip_dist_decay: bool = False, skip_tads: bool = False, skip_compartments: bool = False, skip_balancing: bool = False, skip_mcool: bool = False, skip_multiqc: bool = False) -> None:
     """
     nf-core/hic
 

@@ -116,6 +116,9 @@ class Digestion(Enum):
     dpnii = "dpnii"
     arima = "arima"
 
+class Genome(Enum):
+    mm10 = "mm10"
+    GRCh37 = "GRCh37"
 
 generated_parameters = {
     'input': NextflowParameter(
@@ -150,7 +153,7 @@ generated_parameters = {
     ),
     'genome': NextflowParameter(
         display_name="genome",
-        type=typing.Optional[str],
+        type=typing.Optional[Genome],
         default=None,
         section_title='Reference genome options',
         description='Name of iGenomes reference.',
