@@ -6,12 +6,12 @@ from latch.types.metadata import (
 )
 from latch.types.directory import LatchDir
 
-from .parameters import generated_parameters
+from .parameters import generated_parameters, flow
 
 NextflowMetadata(
     display_name='nf-core/hic',
     author=LatchAuthor(
-        name="Your Name",
+        name="nf-core",
     ),
     parameters=generated_parameters,
     runtime_resources=NextflowRuntimeResources(
@@ -19,5 +19,6 @@ NextflowMetadata(
         memory=8,
         storage_gib=100,
     ),
-    log_dir=LatchDir("latch:///your_log_dir"),
+    flow=flow,
+    log_dir=LatchDir("latch:///nf_core_hic_logs"),
 )

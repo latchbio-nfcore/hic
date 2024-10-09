@@ -259,11 +259,6 @@
                     "default": 100,
                     "description": "Maximum number of iteraction for HiC-Pro ICE normalization"
                 },
-                "res_zoomify": {
-                    "type": "string",
-                    "default": "5000",
-                    "description": "Maximum resolution to build mcool file"
-                },
                 "save_raw_maps": {
                     "type": "boolean",
                     "description": "Save raw contact maps"
@@ -276,11 +271,6 @@
             "description": "Set up downstream analysis from contact maps",
             "default": "",
             "properties": {
-                "res_dist_decay": {
-                    "type": "string",
-                    "default": "1000000",
-                    "description": "Resolution to build count/distance plot"
-                },
                 "tads_caller": {
                     "type": "string",
                     "default": "hicexplorer,insulation",
@@ -291,11 +281,6 @@
                     "pattern": "^(\\d+)(,\\d+)*$",
                     "default": "40000,20000",
                     "description": "Resolution to run TADs callers (comma separated)"
-                },
-                "res_compartments": {
-                    "type": "string",
-                    "default": "250000",
-                    "description": "Resolution for compartments calling"
                 }
             }
         },

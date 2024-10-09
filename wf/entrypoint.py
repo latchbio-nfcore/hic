@@ -50,6 +50,15 @@ def initialize() -> str:
     return resp.json()["name"]
 
 
+class Digestion(Enum):
+    hindiii = 'hindiii'
+    mboi = 'mboi'
+    dpnii = 'dpnii'
+    arima = 'arima'
+
+
+
+
 @dataclass
 class Sample:
     sample: str
@@ -63,7 +72,7 @@ input_construct_samplesheet = metadata._nextflow_metadata.parameters['input'].sa
 
 
 @nextflow_runtime_task(cpu=4, memory=8, storage_gib=100)
-def nextflow_runtime(pvc_name: str, input: typing.List[Sample], outdir: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})], email: typing.Optional[str], multiqc_title: typing.Optional[str], genome: typing.Optional[str], fasta: typing.Optional[LatchFile], bwt2_index: typing.Optional[str], digestion: typing.Optional[str], restriction_site: typing.Optional[str], ligation_site: typing.Optional[str], chromosome_size: typing.Optional[LatchFile], restriction_fragments: typing.Optional[LatchFile], save_reference: typing.Optional[bool], dnase: typing.Optional[bool], min_cis_dist: typing.Optional[int], split_fastq: typing.Optional[bool], save_aligned_intermediates: typing.Optional[bool], keep_dups: typing.Optional[bool], keep_multi: typing.Optional[bool], max_insert_size: typing.Optional[int], min_insert_size: typing.Optional[int], max_restriction_fragment_size: typing.Optional[int], min_restriction_fragment_size: typing.Optional[int], save_interaction_bam: typing.Optional[bool], save_pairs_intermediates: typing.Optional[bool], hicpro_maps: typing.Optional[bool], ice_filter_high_count_perc: typing.Optional[int], save_raw_maps: typing.Optional[bool], skip_maps: typing.Optional[bool], skip_dist_decay: typing.Optional[bool], skip_tads: typing.Optional[bool], skip_compartments: typing.Optional[bool], skip_balancing: typing.Optional[bool], skip_mcool: typing.Optional[bool], skip_multiqc: typing.Optional[bool], multiqc_methods_description: typing.Optional[str], fastq_chunks_size: typing.Optional[int], min_mapq: typing.Optional[int], bwt2_opts_end2end: typing.Optional[str], bwt2_opts_trimmed: typing.Optional[str], bin_size: typing.Optional[str], ice_filter_low_count_perc: typing.Optional[float], ice_eps: typing.Optional[float], ice_max_iter: typing.Optional[int], res_zoomify: typing.Optional[str], res_dist_decay: typing.Optional[str], tads_caller: typing.Optional[str], res_tads: typing.Optional[str], res_compartments: typing.Optional[str]) -> None:
+def nextflow_runtime(pvc_name: str, input: typing.List[Sample], outdir: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})], email: typing.Optional[str], multiqc_title: typing.Optional[str], genome: typing.Optional[str], fasta: typing.Optional[LatchFile], bwt2_index: typing.Optional[str], digestion: typing.Optional[Digestion], restriction_site: typing.Optional[str], ligation_site: typing.Optional[str], chromosome_size: typing.Optional[LatchFile], restriction_fragments: typing.Optional[LatchFile], min_cis_dist: typing.Optional[int], max_insert_size: typing.Optional[int], min_insert_size: typing.Optional[int], max_restriction_fragment_size: typing.Optional[int], min_restriction_fragment_size: typing.Optional[int], ice_filter_high_count_perc: typing.Optional[int], multiqc_methods_description: typing.Optional[str], save_reference: bool, dnase: bool, split_fastq: bool, fastq_chunks_size: typing.Optional[int], min_mapq: typing.Optional[int], bwt2_opts_end2end: typing.Optional[str], bwt2_opts_trimmed: typing.Optional[str], save_aligned_intermediates: bool, keep_dups: bool, keep_multi: bool, save_interaction_bam: bool, save_pairs_intermediates: bool, bin_size: typing.Optional[str], hicpro_maps: bool, ice_filter_low_count_perc: typing.Optional[float], ice_eps: typing.Optional[float], ice_max_iter: typing.Optional[int], save_raw_maps: bool, tads_caller: typing.Optional[str], res_tads: typing.Optional[str], skip_maps: bool, skip_dist_decay: bool, skip_tads: bool, skip_compartments: bool, skip_balancing: bool, skip_mcool: bool, skip_multiqc: bool) -> None:
     shared_dir = Path("/nf-workdir")
 
     exec_name = _get_execution_name()
@@ -71,7 +80,7 @@ def nextflow_runtime(pvc_name: str, input: typing.List[Sample], outdir: typing_e
         print("Failed to get execution name.")
         exec_name = "unknown"
 
-    latch_log_dir = urljoins("latch:///your_log_dir/nf_nf_core_hic", exec_name)
+    latch_log_dir = urljoins("latch:///nf_core_hic_logs/nf_nf_core_hic", exec_name)
     print(f"Log directory: {latch_log_dir}")
 
 
@@ -153,12 +162,9 @@ def nextflow_runtime(pvc_name: str, input: typing.List[Sample], outdir: typing_e
                 *get_flag('ice_filter_high_count_perc', ice_filter_high_count_perc),
                 *get_flag('ice_eps', ice_eps),
                 *get_flag('ice_max_iter', ice_max_iter),
-                *get_flag('res_zoomify', res_zoomify),
                 *get_flag('save_raw_maps', save_raw_maps),
-                *get_flag('res_dist_decay', res_dist_decay),
                 *get_flag('tads_caller', tads_caller),
                 *get_flag('res_tads', res_tads),
-                *get_flag('res_compartments', res_compartments),
                 *get_flag('skip_maps', skip_maps),
                 *get_flag('skip_dist_decay', skip_dist_decay),
                 *get_flag('skip_tads', skip_tads),
@@ -230,13 +236,75 @@ def nextflow_runtime(pvc_name: str, input: typing.List[Sample], outdir: typing_e
 
 
 @workflow(metadata._nextflow_metadata)
-def nf_nf_core_hic(input: typing.List[Sample], outdir: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})], email: typing.Optional[str], multiqc_title: typing.Optional[str], genome: typing.Optional[str], fasta: typing.Optional[LatchFile], bwt2_index: typing.Optional[str], digestion: typing.Optional[str], restriction_site: typing.Optional[str], ligation_site: typing.Optional[str], chromosome_size: typing.Optional[LatchFile], restriction_fragments: typing.Optional[LatchFile], save_reference: typing.Optional[bool], dnase: typing.Optional[bool], min_cis_dist: typing.Optional[int], split_fastq: typing.Optional[bool], save_aligned_intermediates: typing.Optional[bool], keep_dups: typing.Optional[bool], keep_multi: typing.Optional[bool], max_insert_size: typing.Optional[int], min_insert_size: typing.Optional[int], max_restriction_fragment_size: typing.Optional[int], min_restriction_fragment_size: typing.Optional[int], save_interaction_bam: typing.Optional[bool], save_pairs_intermediates: typing.Optional[bool], hicpro_maps: typing.Optional[bool], ice_filter_high_count_perc: typing.Optional[int], save_raw_maps: typing.Optional[bool], skip_maps: typing.Optional[bool], skip_dist_decay: typing.Optional[bool], skip_tads: typing.Optional[bool], skip_compartments: typing.Optional[bool], skip_balancing: typing.Optional[bool], skip_mcool: typing.Optional[bool], skip_multiqc: typing.Optional[bool], multiqc_methods_description: typing.Optional[str], fastq_chunks_size: typing.Optional[int] = 20000000, min_mapq: typing.Optional[int] = 10, bwt2_opts_end2end: typing.Optional[str] = "'--very-sensitive -L 30 --score-min L,-0.6,-0.2 --end-to-end --reorder'", bwt2_opts_trimmed: typing.Optional[str] = "'--very-sensitive -L 20 --score-min L,-0.6,-0.2 --end-to-end --reorder'", bin_size: typing.Optional[str] = '1000000,500000', ice_filter_low_count_perc: typing.Optional[float] = 0.02, ice_eps: typing.Optional[float] = 0.1, ice_max_iter: typing.Optional[int] = 100, res_zoomify: typing.Optional[str] = '5000', res_dist_decay: typing.Optional[str] = '1000000', tads_caller: typing.Optional[str] = 'hicexplorer,insulation', res_tads: typing.Optional[str] = '40000,20000', res_compartments: typing.Optional[str] = '250000') -> None:
+def nf_nf_core_hic(input: typing.List[Sample], outdir: typing_extensions.Annotated[LatchDir, FlyteAnnotation({'output': True})], email: typing.Optional[str], multiqc_title: typing.Optional[str], genome: typing.Optional[str], fasta: typing.Optional[LatchFile], bwt2_index: typing.Optional[str], digestion: typing.Optional[Digestion], restriction_site: typing.Optional[str], ligation_site: typing.Optional[str], chromosome_size: typing.Optional[LatchFile], restriction_fragments: typing.Optional[LatchFile], min_cis_dist: typing.Optional[int], max_insert_size: typing.Optional[int], min_insert_size: typing.Optional[int], max_restriction_fragment_size: typing.Optional[int], min_restriction_fragment_size: typing.Optional[int], ice_filter_high_count_perc: typing.Optional[int], multiqc_methods_description: typing.Optional[str], save_reference: bool = False, dnase: bool = False, split_fastq: bool = False, fastq_chunks_size: typing.Optional[int] = 20000000, min_mapq: typing.Optional[int] = 10, bwt2_opts_end2end: typing.Optional[str] = "'--very-sensitive -L 30 --score-min L,-0.6,-0.2 --end-to-end --reorder'", bwt2_opts_trimmed: typing.Optional[str] = "'--very-sensitive -L 20 --score-min L,-0.6,-0.2 --end-to-end --reorder'", save_aligned_intermediates: bool = False, keep_dups: bool = False, keep_multi: bool = False, save_interaction_bam: bool = False, save_pairs_intermediates: bool = False, bin_size: typing.Optional[str] = '1000000,500000', hicpro_maps: bool = False, ice_filter_low_count_perc: typing.Optional[float] = 0.02, ice_eps: typing.Optional[float] = 0.1, ice_max_iter: typing.Optional[int] = 100, save_raw_maps: bool = False, tads_caller: typing.Optional[str] = 'hicexplorer,insulation', res_tads: typing.Optional[str] = '40000,20000', skip_maps: bool = False, skip_dist_decay: bool = False, skip_tads: bool = False, skip_compartments: bool = False, skip_balancing: bool = False, skip_mcool: bool = False, skip_multiqc: bool = False) -> None:
     """
     nf-core/hic
 
-    Sample Description
+    # ![nf-core/hic](docs/images/nf-core-hic_logo_light.png#gh-light-mode-only) ![nf-core/hic](docs/images/nf-core-hic_logo_dark.png#gh-dark-mode-only)
+
+    [![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/hic/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.2669512-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.2669512)
+
+    [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A522.10.1-23aa62.svg)](https://www.nextflow.io/)
+
+
+    ## Introduction
+
+    **nf-core/hic** is a bioinformatics best-practice analysis pipeline for Analysis of Chromosome Conformation Capture data (Hi-C).
+
+    The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
+
+    On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources.The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/hic/results).
+
+    ## Pipeline summary
+
+    1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
+    2. Hi-C data processing
+    1. [`HiC-Pro`](https://github.com/nservant/HiC-Pro)
+        1. Mapping using a two steps strategy to rescue reads spanning the ligation
+            sites ([`bowtie2`](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml))
+        2. Detection of valid interaction products
+        3. Duplicates removal
+        4. Generate raw and normalized contact maps ([`iced`](https://github.com/hiclib/iced))
+    3. Create genome-wide contact maps at various resolutions ([`cooler`](https://github.com/open2c/cooler))
+    4. Contact maps normalization using balancing algorithm ([`cooler`](https://github.com/open2c/cooler))
+    5. Export to various contact maps formats ([`HiC-Pro`](https://github.com/nservant/HiC-Pro), [`cooler`](https://github.com/open2c/cooler))
+    6. Quality controls ([`HiC-Pro`](https://github.com/nservant/HiC-Pro), [`HiCExplorer`](https://github.com/deeptools/HiCExplorer))
+    7. Compartments calling ([`cooltools`](https://cooltools.readthedocs.io/en/latest/))
+    8. TADs calling ([`HiCExplorer`](https://github.com/deeptools/HiCExplorer), [`cooltools`](https://cooltools.readthedocs.io/en/latest/))
+    9. Quality control report ([`MultiQC`](https://multiqc.info/))
+
+    ## Pipeline output
+
+    To see the the results of a test run with a full size dataset refer to the [results](https://nf-co.re/hic/results) tab on the nf-core website pipeline page.
+    For more details about the output files and reports, please refer to the
+    [output documentation](https://nf-co.re/hic/output).
+
+    ## Credits
+
+    nf-core/hic was originally written by Nicolas Servant.
+
+    ## Contributions and Support
+
+    If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
+
+    For further information or help, don't hesitate to get in touch on the [Slack `#hic` channel](https://nfcore.slack.com/channels/hic) (you can join with [this invite](https://nf-co.re/join/slack)).
+
+    ## Citations
+
+    If you use nf-core/hic for your analysis, please cite it using the following doi: doi: [10.5281/zenodo.2669512](https://doi.org/10.5281/zenodo.2669512)
+
+    An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
+
+    You can cite the `nf-core` publication as follows:
+
+    > **The nf-core framework for community-curated bioinformatics pipelines.**
+    >
+    > Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.
+    >
+    > _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).
+
     """
 
     pvc_name: str = initialize()
-    nextflow_runtime(pvc_name=pvc_name, input=input, outdir=outdir, email=email, multiqc_title=multiqc_title, genome=genome, fasta=fasta, bwt2_index=bwt2_index, digestion=digestion, restriction_site=restriction_site, ligation_site=ligation_site, chromosome_size=chromosome_size, restriction_fragments=restriction_fragments, save_reference=save_reference, dnase=dnase, min_cis_dist=min_cis_dist, split_fastq=split_fastq, fastq_chunks_size=fastq_chunks_size, min_mapq=min_mapq, bwt2_opts_end2end=bwt2_opts_end2end, bwt2_opts_trimmed=bwt2_opts_trimmed, save_aligned_intermediates=save_aligned_intermediates, keep_dups=keep_dups, keep_multi=keep_multi, max_insert_size=max_insert_size, min_insert_size=min_insert_size, max_restriction_fragment_size=max_restriction_fragment_size, min_restriction_fragment_size=min_restriction_fragment_size, save_interaction_bam=save_interaction_bam, save_pairs_intermediates=save_pairs_intermediates, bin_size=bin_size, hicpro_maps=hicpro_maps, ice_filter_low_count_perc=ice_filter_low_count_perc, ice_filter_high_count_perc=ice_filter_high_count_perc, ice_eps=ice_eps, ice_max_iter=ice_max_iter, res_zoomify=res_zoomify, save_raw_maps=save_raw_maps, res_dist_decay=res_dist_decay, tads_caller=tads_caller, res_tads=res_tads, res_compartments=res_compartments, skip_maps=skip_maps, skip_dist_decay=skip_dist_decay, skip_tads=skip_tads, skip_compartments=skip_compartments, skip_balancing=skip_balancing, skip_mcool=skip_mcool, skip_multiqc=skip_multiqc, multiqc_methods_description=multiqc_methods_description)
+    nextflow_runtime(pvc_name=pvc_name, input=input, outdir=outdir, email=email, multiqc_title=multiqc_title, genome=genome, fasta=fasta, bwt2_index=bwt2_index, digestion=digestion, restriction_site=restriction_site, ligation_site=ligation_site, chromosome_size=chromosome_size, restriction_fragments=restriction_fragments, save_reference=save_reference, dnase=dnase, min_cis_dist=min_cis_dist, split_fastq=split_fastq, fastq_chunks_size=fastq_chunks_size, min_mapq=min_mapq, bwt2_opts_end2end=bwt2_opts_end2end, bwt2_opts_trimmed=bwt2_opts_trimmed, save_aligned_intermediates=save_aligned_intermediates, keep_dups=keep_dups, keep_multi=keep_multi, max_insert_size=max_insert_size, min_insert_size=min_insert_size, max_restriction_fragment_size=max_restriction_fragment_size, min_restriction_fragment_size=min_restriction_fragment_size, save_interaction_bam=save_interaction_bam, save_pairs_intermediates=save_pairs_intermediates, bin_size=bin_size, hicpro_maps=hicpro_maps, ice_filter_low_count_perc=ice_filter_low_count_perc, ice_filter_high_count_perc=ice_filter_high_count_perc, ice_eps=ice_eps, ice_max_iter=ice_max_iter, save_raw_maps=save_raw_maps, tads_caller=tads_caller, res_tads=res_tads, skip_maps=skip_maps, skip_dist_decay=skip_dist_decay, skip_tads=skip_tads, skip_compartments=skip_compartments, skip_balancing=skip_balancing, skip_mcool=skip_mcool, skip_multiqc=skip_multiqc, multiqc_methods_description=multiqc_methods_description)
 
