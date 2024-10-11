@@ -420,7 +420,7 @@ generated_parameters = {
     'skip_dist_decay': NextflowParameter(
         display_name="skip_dist_decay",
         type=bool,
-        default=False,
+        default=True,
         section_title=None,
         description='Do not run distance/decay plot',
     ),

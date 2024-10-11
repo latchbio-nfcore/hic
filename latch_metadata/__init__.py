@@ -18,6 +18,7 @@ NextflowMetadata(
         cpus=4,
         memory=8,
         storage_gib=100,
+        storage_expiration_hours=7
     ),
     flow=flow,
     log_dir=LatchDir("latch:///nf_core_hic_logs"),
