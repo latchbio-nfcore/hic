@@ -5,6 +5,7 @@
 process HIC_PLOT_DIST_VS_COUNTS {
     tag "${meta.id}"
     label 'process_medium'
+    label 'error_ignore'
 
     conda "bioconda::hicexplorer=3.7.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
