@@ -1,6 +1,6 @@
 process MERGE_BOWTIE2{
     tag "${meta.id}"
-    label 'process_medium'
+    label 'process_high_cpus'
 
     conda "bioconda::samtools=1.15.1"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
